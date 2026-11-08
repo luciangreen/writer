@@ -1,97 +1,19 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { inspire, readInstruction, claudePrompt, inspirationBlocks } from '../lib/inspire.js';
-import { applyRules, learnRules, parsePairs, proveRules, ruleSetBlocks, rulesFromBlocks, diff, tokens } from '../lib/authorer.js';
+import { replaceWords } from '../lib/replace.js';
 import { acceptOps, isTracking, rejectOps, review, startTracking, stopTracking, trackOps } from '../lib/track.js';
 import { sanitize, textOf, toMarkdown, toText } from '../lib/rich.js';
 import { writerCommands, levelId } from '../lib/commands.js';
 import { apply, createDocument, undoLastBy } from '../lib/core.js';
 
-const HERE = path.dirname(fileURLToPath(import.meta.url));
-const fixture = (f) => fs.readFileSync(path.join(HERE, 'fixtures', f), 'utf8');
-const sources = () => ({ text: fixture('essay.txt'), bio: fixture('bio.txt'), recent: [fixture('recent.txt')], gl: ['practice', 'wisdom', 'breathing', 'clarity', 'joy', 'teacher', 'stress'] });
 
-// ------------------------------------------------------------------ GL Inspire
-test('GL Inspire scores new, connected, positive, linking words, and explains each score', () => {
-  const list = inspire(sources(), { count: 6 });
-  assert.equal(list.length, 6);
-  const words = list.map((x) => x.word);
-  assert.ok(!words.some((w) => /meditation|students|calm/.test(w)), 'words already in the text are not suggested');
-  assert.ok(!words.includes('stress') && !words.includes('failure'), 'negative words are not suggested');
-  for (let i = 1; i < list.length; i++) assert.ok(list[i - 1].score >= list[i].score, 'ranked by score');
-  const music = list.find((x) => x.word === 'music');
-  assert.ok(music, 'music: beside meditation and students, positive');
-  assert.ok(music.parts.connected.includes('meditation'));
-  assert.equal(music.parts.positive, 1);
-  assert.match(music.why, /^music: [\d.]+ = new/);
-  assert.ok(list.every((x) => x.direction.includes(x.word)));
-  // the score adds up as described
-  const p = music.parts;
-  assert.equal(music.score, Math.round((2 * Math.min(p.connected.length, 5) + 1.5 * Math.min(p.links.length, 5) + p.positive + p.new) * 100) / 100);
-});
+// GL Inspire and the Chatbot App Authorer are tested in their own repos (glinspire, chatbotappauthor).
 
-test('GL Inspire follows a focus, a positive-only request and a choice of sources', () => {
-  const focused = inspire(sources(), readInstruction('more about health', { count: 4 }));
-  assert.ok(focused.some((x) => x.parts.focus));
-  assert.equal(focused[0].word, 'health', 'the focus itself comes first');
-  assert.ok(focused.filter((x) => x.parts.focus).length >= 3, 'words near the focus rise');
-  assert.ok(inspire(sources(), { count: 10, positiveOnly: true }).every((x) => x.parts.positive > 0));
-  const glOnly = inspire(sources(), { count: 10, sources: ['gl'] });
-  assert.ok(glOnly.every((x) => x.from.includes('gl')));
-  assert.deepEqual(readInstruction('3 ideas just from my bio, only positive'), { count: 3, positiveOnly: true, sources: ['bio'] });
-  assert.equal(readInstruction('fewer', { count: 8 }).count, 4);
-});
-
-test('nothing is prepared for Claude unless an input is switched on, and inputs are labelled', () => {
-  const s = sources();
-  assert.equal(claudePrompt(s, {}), null);
-  const p = claudePrompt(s, { bio: true });
-  assert.match(p, /^Author's bio:/);
-  assert.ok(!p.includes('Text so far') && !p.includes('recent texts'));
-  assert.equal(inspirationBlocks(inspire(s, { count: 2 }))[0].type, 'inspiration');
-});
-
-// ------------------------------------------------------------------ Chatbot App Authorer
-test('the Authorer learns rules from example pairs, proves them, and applies them to new text', () => {
-  const pairs = parsePairs([
-    "Hello, I am pleased to meet you. => Hi, I'm glad to meet you!",
-    "Hello, I am writing to ask about the job. => Hi, I'm writing to ask about the job!",
-    "I am pleased with the result. => I'm glad with the result!"
-  ].join('\n'));
-  assert.equal(pairs.length, 3);
-  const rules = learnRules(pairs);
-  assert.deepEqual(rules.map((r) => `${r.find} -> ${r.replace}`), ["I am pleased -> I'm glad", "I am -> I'm", 'Hello -> Hi', '. -> !']);
-  assert.equal(rules.find((r) => r.find === 'Hello').count, 2);
-  assert.ok(proveRules(rules, pairs).ok);
-  assert.equal(applyRules('Hello, I am pleased to see the garden.', rules).text, "Hi, I'm glad to see the garden!");
-});
-
-test('rules keep case, delete words, and switch persons', () => {
-  const pairs = parsePairs('I will go to the shop. => You will go to the shop.\nI like my dog very much. => You like your dog.');
-  const rules = learnRules(pairs);
-  assert.ok(proveRules(rules, pairs).ok, JSON.stringify(proveRules(rules, pairs)));
-  assert.equal(applyRules('I want my book.', rules).text, 'You want your book.');
-  assert.equal(applyRules('hello there', [{ find: 'hello', replace: 'Hi' }]).text, 'hi there');
-  assert.equal(applyRules('Hello there', [{ find: 'hello', replace: 'hi' }]).text, 'Hi there');
-});
-
-test('a rule that would fire where an example did not change is narrowed with context', () => {
-  const pairs = parsePairs('The cat sat on the mat. => The cat sat on the rug.\nThe mat dog ran. => The mat dog ran.');
-  const rules = learnRules(pairs);
-  assert.ok(proveRules(rules, pairs).ok, JSON.stringify(rules));
-  assert.ok(rules[0].find.includes('the mat') || rules[0].find.includes('mat.'), JSON.stringify(rules));
-});
-
-test('edited rules can be switched off, and rule sets round-trip as Office blocks', () => {
-  const rules = learnRules(parsePairs('good => great'));
-  rules[0].on = false;
-  assert.equal(applyRules('a good day', rules).text, 'a good day');
-  const back = rulesFromBlocks(ruleSetBlocks(rules));
-  assert.deepEqual(back.map(({ find, replace, on }) => ({ find, replace, on })), [{ find: 'good', replace: 'great', on: false }]);
-  assert.deepEqual(diff(tokens('a b c'), tokens('a x c')).map((d) => d.type), ['same', 'ins', 'del', 'same']);
+test('find and replace keeps the case of the first letter and matches whole words', () => {
+  assert.deepEqual(replaceWords('Good food is good. Goodness!', 'good', 'great'), { text: 'Great food is great. Goodness!', count: 2 });
+  assert.equal(replaceWords('GOOD', 'good', 'great').text, 'GREAT');
+  assert.equal(replaceWords('a very good day', 'very good', 'fine').text, 'a fine day');
+  assert.equal(replaceWords('a good  day', 'good', '').text, 'a day');
 });
 
 // ------------------------------------------------------------------ track changes
@@ -164,19 +86,23 @@ test('commands respect track changes, and use the helpers given for drafting, in
   const ctx = {
     draft: (doc) => ({ ops: [{ op: 'insert', block: { type: 'paragraph', text: 'Drafted.' } }], say: 'Drafted.' }),
     inspire: async (doc, instruction) => ({ doc, say: `inspired ${instruction}` }),
-    ruleSet: async (name) => (name === 'casual' ? [{ find: 'One', replace: 'Uno' }] : null)
+    ruleSet: async (name) => (name === 'casual' ? [{ find: 'One', replace: 'Uno' }] : null),
+    applyRules: (text, rules) => { const r = replaceWords(text, rules[0].find, rules[0].replace); return r; }
   };
   assert.equal((await reg.perform('draft it', d, { ctx })).doc.blocks.at(-1).text, 'Drafted.');
   assert.equal((await reg.perform('inspire me more about health', d, { ctx })).say, 'inspired more about health');
   assert.equal((await reg.perform('apply the casual rules', d, { ctx })).doc.blocks[0].text, 'Uno.');
   assert.match((await reg.perform('apply the formal rules', d, { ctx })).say, /don't have rules called formal/);
+  // without the Authorer installed
+  assert.match((await reg.perform('apply the casual rules', d, { ctx: { ruleSet: ctx.ruleSet } })).say, /Chatbot App Authorer, which is not installed/);
+  assert.match((await reg.perform('inspire me', d)).say, /GL Inspire is not available/);
 });
 
 test("plug-in edits are recorded as the plug-in's and can be undone alone", async () => {
   const { createPlugins } = await import('../lib/core.js');
   const plugins = createPlugins().register({ id: 'gl-inspire', name: 'GL Inspire', run: ({ options }) => ({ ops: options.blocks.map((block) => ({ op: 'insert', block })) }) });
   const d = createDocument({ blocks: [{ id: 'a', type: 'paragraph', text: 'Text.' }] });
-  const r = await plugins.run('gl-inspire', d, { options: { blocks: inspirationBlocks(inspire(sources(), { count: 2 })) } });
+  const r = await plugins.run('gl-inspire', d, { options: { blocks: [{ type: 'inspiration', text: 'music: connect it' }, { type: 'inspiration', text: 'joy: follow it' }] } });
   assert.equal(r.doc.blocks.length, 3);
   assert.equal(undoLastBy(r.doc, 'plugin:gl-inspire').doc.blocks.length, 1);
 });

@@ -27,14 +27,6 @@ main.writer { display: grid; grid-template-columns: minmax(230px, 0.8fr) minmax(
 .question input { width: 6em; }
 .datarow { display: flex; gap: 6px; margin: 4px 0; }
 .datarow .k { width: 40%; } .datarow .v { flex: 1; min-width: 0; }
-.source { border: 1px solid #8884; border-radius: 6px; padding: 6px 8px; margin: 6px 0; }
-.source header { display: flex; justify-content: space-between; gap: 6px; font-weight: 600; flex-wrap: wrap; }
-.source header label { font-weight: normal; font-size: .85em; }
-ol.inspirations li { margin: 6px 0; }
-ol.inspirations .why { font-size: .8em; color: #777; display: block; }
-table.rules { border-collapse: collapse; width: 100%; }
-table.rules td, table.rules th { border: 1px solid #8884; padding: 2px 4px; text-align: left; }
-table.rules input[type=text] { width: 100%; box-sizing: border-box; border: 0; background: transparent; font: inherit; }
 .ok { color: #2e7d32; } .bad { color: #c0392b; }
 .review .blk { margin: 8px 0; padding: 6px 8px; border: 1px solid #8884; border-radius: 6px; }
 .review ins { background: #d8f5d0; text-decoration: none; } .review del { background: #fbd5d0; }
