@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Writer</title>
+  <link rel="stylesheet" href="/shared/style.css">
+  <link rel="stylesheet" href="/shared/claude.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <header class="bar wbar">
+    <h1>Writer</h1>
+    <input id="title" class="title" aria-label="Title" value="Untitled">
+    <span class="spacer"></span>
+    <label class="yl">Year level <select id="year"></select></label>
+    <button id="new">New</button>
+    <button id="open">Open…</button>
+    <button id="save">Save</button>
+    <select id="export" aria-label="Export"><option value="">Export…</option><option value="txt">Plain text (.txt)</option><option value="md">Markdown (.md)</option><option value="pl">Prolog form (.pl)</option></select>
+  </header>
+  <main class="writer">
+    <aside class="side left panel" aria-label="Describe, Data and Opinion">
+      <h2>Describe it</h2>
+      <textarea id="describe" rows="7" placeholder="Describe what to write, in plain statements and rules. Draft turns it into proved, optimised text at your year level."></textarea>
+      <div class="row"><button id="draft" class="primary">Draft</button><span id="draftStatus" class="status quiet" role="status"></span></div>
+      <div id="questions" aria-live="polite"></div>
+      <h2>Data</h2>
+      <div id="data"></div>
+      <button id="addData" class="small">Add a Data item</button>
+      <h2>Opinion</h2>
+      <textarea id="opinion" rows="4" placeholder="Your opinion of the text: what works, what to change."></textarea>
+    </aside>
+    <section class="page panel" aria-label="Document">
+      <div class="toolbar" role="toolbar" aria-label="Formatting">
+        <select id="blockType" aria-label="Paragraph style"><option value="paragraph">Paragraph</option><option value="heading">Heading</option></select>
+        <button data-cmd="bold" title="Bold (Ctrl+B)"><b>B</b></button>
+        <button data-cmd="italic" title="Italic (Ctrl+I)"><i>I</i></button>
+        <button data-cmd="underline" title="Underline (Ctrl+U)"><u>U</u></button>
+        <button id="link" title="Link">Link</button>
+        <span class="sep"></span>
+        <button id="undo" title="Undo (Ctrl+Z)">Undo</button>
+        <button id="redo" title="Redo (Ctrl+Shift+Z)">Redo</button>
+        <span class="sep"></span>
+        <label class="track"><input type="checkbox" id="track"> Track changes</label>
+        <span id="counts" class="quiet"></span>
+      </div>
+      <div id="editor" class="editor-page" contenteditable="true" spellcheck="true" aria-label="Text" role="textbox" aria-multiline="true"></div>
+      <form id="say" class="row say"><input id="sayText" type="text" placeholder='Tell Lucian: "add a paragraph saying …", "make it year 5", "inspire me", "undo that"'><button>Do</button></form>
+      <p id="reply" class="quiet" aria-live="polite"></p>
+    </section>
+    <aside class="side right panel" aria-label="Tools">
+      <nav class="tabs" id="tabs" role="tablist"></nav>
+      <div id="tool"></div>
+    </aside>
+  </main>
+</body>
+</html>

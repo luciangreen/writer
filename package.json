@@ -1,0 +1,10 @@
+{
+  "name": "writer",
+  "version": "0.1.0",
+  "description": "Writer: the Lucian Office word processor, with Converter drafts, year levels, track changes, GL Inspire and the Chatbot App Authorer",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/*.test.js"
+  },
+  "license": "BSD-3-Clause"
+}

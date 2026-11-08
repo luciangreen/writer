@@ -1,0 +1,44 @@
+body { margin: 0; }
+.wbar { flex-wrap: wrap; gap: 8px; }
+.wbar .title { font: inherit; font-weight: 600; border: 1px solid transparent; background: transparent; padding: 4px 6px; min-width: 8em; }
+.wbar .title:hover, .wbar .title:focus { border-color: #8886; }
+.wbar .yl { display: flex; gap: 6px; align-items: center; }
+main.writer { display: grid; grid-template-columns: minmax(230px, 0.8fr) minmax(320px, 2fr) minmax(260px, 1fr); gap: 12px; padding: 12px; align-items: start; }
+.writer .panel { margin: 0; min-width: 0; }
+.writer h2 { font-size: 1rem; margin: 12px 0 6px; }
+.writer h3 { font-size: .95rem; margin: 10px 0 4px; }
+.writer textarea { width: 100%; box-sizing: border-box; font: inherit; }
+.writer .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px; }
+.writer .row input[type=text] { flex: 1; min-width: 0; }
+.writer button.small { padding: 2px 8px; font-size: .85em; }
+.toolbar { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; padding-bottom: 8px; border-bottom: 1px solid #8884; }
+.toolbar .sep { width: 1px; height: 22px; background: #8885; margin: 0 4px; }
+.toolbar .track { display: flex; gap: 4px; align-items: center; }
+.editor-page { min-height: 55vh; padding: 18px 22px; outline: none; line-height: 1.65; font-size: 1.05rem; background: var(--paper, #fffdf8); color: #222; border-radius: 6px; margin-top: 8px; box-shadow: inset 0 0 0 1px #8883; }
+.editor-page:focus { box-shadow: inset 0 0 0 2px #3a7bd5; }
+.editor-page p { margin: 0 0 .8em; }
+.editor-page h2 { font-size: 1.3rem; margin: .6em 0 .4em; }
+.editor-page blockquote.inspiration { margin: .4em 0 .8em; padding: 6px 10px; border-left: 4px solid #e2a03f; background: #fff4e0; font-size: .95rem; }
+.editor-page:empty::before { content: 'Start writing, or describe it on the left and press Draft.'; color: #999; }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; border-bottom: 1px solid #8884; margin-bottom: 8px; }
+.tabs button.on { font-weight: 600; border-bottom: 2px solid currentColor; }
+.question { margin: 6px 0; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.question label { flex: 1; min-width: 160px; }
+.question input { width: 6em; }
+.datarow { display: flex; gap: 6px; margin: 4px 0; }
+.datarow .k { width: 40%; } .datarow .v { flex: 1; min-width: 0; }
+.source { border: 1px solid #8884; border-radius: 6px; padding: 6px 8px; margin: 6px 0; }
+.source header { display: flex; justify-content: space-between; gap: 6px; font-weight: 600; flex-wrap: wrap; }
+.source header label { font-weight: normal; font-size: .85em; }
+ol.inspirations li { margin: 6px 0; }
+ol.inspirations .why { font-size: .8em; color: #777; display: block; }
+table.rules { border-collapse: collapse; width: 100%; }
+table.rules td, table.rules th { border: 1px solid #8884; padding: 2px 4px; text-align: left; }
+table.rules input[type=text] { width: 100%; box-sizing: border-box; border: 0; background: transparent; font: inherit; }
+.ok { color: #2e7d32; } .bad { color: #c0392b; }
+.review .blk { margin: 8px 0; padding: 6px 8px; border: 1px solid #8884; border-radius: 6px; }
+.review ins { background: #d8f5d0; text-decoration: none; } .review del { background: #fbd5d0; }
+.review .status { font-size: .8em; }
+.say { margin-top: 10px; }
+@media (max-width: 980px) { main.writer { grid-template-columns: 1fr 1.6fr; } .side.right { grid-column: 1 / -1; } }
+@media (max-width: 680px) { main.writer { grid-template-columns: 1fr; padding: 8px; } .editor-page { padding: 12px; min-height: 40vh; } .wbar h1 { font-size: 1.1rem; } }
