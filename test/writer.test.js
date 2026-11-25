@@ -40,7 +40,7 @@ test('track changes: marks, review, accept and reject, all undoable', () => {
 // ------------------------------------------------------------------ rich text and exports
 test('rich text keeps bold, italic, underline and safe links only', () => {
   assert.equal(sanitize('<b>Hi</b> <script>x()</script><i>there</i> <a href="javascript:bad()">no</a> <a href="https://x.org">yes</a><span style="c">s</span>'),
-    '<b>Hi</b> x()<i>there</i> no <a href="https://x.org" target="_blank" rel="noopener">yes</a>s');
+    '<b>Hi</b> <i>there</i> no <a href="https://x.org" target="_blank" rel="noopener">yes</a>s');
   assert.equal(sanitize('<strong>a<em>b</strong>'), '<b>a<i>b</i></b>');
   assert.equal(textOf('a &amp; <b>b</b><br>c'), 'a & b\nc');
   const d = createDocument({ title: 'Plan', blocks: [{ type: 'heading', text: 'Intro', level: 2 }, { type: 'paragraph', text: 'Hi', html: '<b>Hi</b> there' }], data: { tall: '175', _track: 'on' }, opinion: 'Good.' });
@@ -105,4 +105,10 @@ test("plug-in edits are recorded as the plug-in's and can be undone alone", asyn
   const r = await plugins.run('gl-inspire', d, { options: { blocks: [{ type: 'inspiration', text: 'music: connect it' }, { type: 'inspiration', text: 'joy: follow it' }] } });
   assert.equal(r.doc.blocks.length, 3);
   assert.equal(undoLastBy(r.doc, 'plugin:gl-inspire').doc.blocks.length, 1);
+});
+
+test('pasting drops style blocks, scripts and comments with their contents', () => {
+  assert.equal(sanitize('<style>p{color:red}</style><p>Hello</p><!-- note -->'), 'Hello');
+  assert.equal(sanitize('<html><head><title>T</title><style>.a{}</style></head><body><!--[if gte mso 9]><xml><o:x/></xml><![endif]--><p>Hi <b>there</b></p></body></html>'), 'Hi <b>there</b>');
+  assert.equal(sanitize('<script>alert(1)</script>t'), 't');
 });

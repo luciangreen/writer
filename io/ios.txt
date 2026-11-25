@@ -21,7 +21,7 @@ Writer: 200 inputs and outputs, from real runs (npm run ios writes this file; np
 10. replaceWords("Quickly finds true. Green green list apple data about algorithm.", "finds", "idea")
    => {"text":"Quickly idea true. Green green list apple data about algorithm.","count":1}
 11. sanitize("<i>it</i> <img src=x onerror=y> <script>alert(1)</script> thinks about value")
-   => "<i>it</i>  alert(1) thinks about value"
+   => "<i>it</i>   thinks about value"
 12. escapeHtml("reads < happy about tree")
    => "reads &lt; happy about tree"
 13. toMarkdown("logic writes dog", [{"id":"b0","type":"heading","level":2,"text":"Reads tree list with tree meditates the thinks cat.","items":["about happy","list"]},{"id":"b1","type":"heading","level":2,"text":"Number list apple student.","items":["teacher","sells blue number"]},{"id":"b2","type":"paragraph","level":2,"text":"Apple true data happy simple about algorithm green reads.","items":["buys","apple with"]},{"id":"b3","type":"paragraph","level":2,"text":"True and house student tree person garden.","items":["blue writes book","happy simple cat"]}])
@@ -287,7 +287,7 @@ Writer: 200 inputs and outputs, from real runs (npm run ios writes this file; np
 143. replaceWords("Buys algorithm garden proof music person. Quickly false quickly.", "garden", "Thought")
    => {"text":"Buys algorithm thought proof music person. Quickly false quickly.","count":1}
 144. sanitize("<script>alert(1)</script> <i>it</i> value")
-   => "alert(1) <i>it</i> value"
+   => " <i>it</i> value"
 145. escapeHtml("value runs & value algorithm")
    => "value runs &amp; value algorithm"
 146. toMarkdown("runs about", [{"id":"b0","type":"list","level":2,"text":"Proof music number true person.","items":["apple value quickly","true thinks finds"]},{"id":"b1","type":"list","level":2,"text":"House idea runs.","items":["blue","reads logic finds"]},{"id":"b2","type":"list","level":2,"text":"And cat finds value house meditates.","items":["garden thinks","happy"]},{"id":"b3","type":"list","level":2,"text":"Algorithm student house list meditates.","items":["house","book house false"]}])
@@ -357,7 +357,7 @@ Writer: 200 inputs and outputs, from real runs (npm run ios writes this file; np
 178. replaceWords("House about algorithm idea proof house list garden finds. Apple logic writes tree list value algorithm blue. Blue value runs data music green writes with dog.", "house", "leaf")
    => {"text":"Leaf about algorithm idea proof leaf list garden finds. Apple logic writes tree list value algorithm blue. Blue value runs data music green writes with dog.","count":2}
 179. sanitize("<script>alert(1)</script> <a href=\"javascript:x\">link</a> <b>bold</b> tree")
-   => "alert(1) link <b>bold</b> tree"
+   => " link <b>bold</b> tree"
 180. escapeHtml("idea tree \"q\" simple logic")
    => "idea tree &quot;q&quot; simple logic"
 181. toMarkdown("teacher", [{"id":"b0","type":"list","level":2,"text":"Proof tree and dog.","items":["writes logic","music idea writes"]},{"id":"b1","type":"paragraph","level":2,"text":"Garden simple thinks writes logic with.","items":["book cat","with true algorithm"]},{"id":"b2","type":"paragraph","level":2,"text":"Meditates garden simple.","items":["number idea","value"]}])
